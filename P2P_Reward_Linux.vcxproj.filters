@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="P2P_Reward.cpp" />
+    <ClCompile Include="cJSON.cpp" />
+    <ClCompile Include="cReward.cpp" />
+    <ClCompile Include="cURL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cJSON.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="cReward.h" />
+    <ClInclude Include="cURL.h" />
+  </ItemGroup>
+</Project>
