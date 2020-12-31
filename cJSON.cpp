@@ -2,14 +2,14 @@
 #include "cJSON.h"
 
 cJSON::cJSON()
-{	
-	for (int nLoop = 0; nLoop < 3; nLoop++)
-		fp[nLoop] = NULL;
+{
+    for (int nLoop = 0; nLoop < 3; nLoop++)
+        fp[nLoop] = NULL;
 
-	m_WalletJson = nullptr;
-	m_DataJson = nullptr;
-	
-	nFileSize = 0;
+    m_WalletJson = nullptr;
+    m_DataJson = nullptr;
+
+    nFileSize = 0;
 }
 
 cJSON::~cJSON()
@@ -17,9 +17,9 @@ cJSON::~cJSON()
 
 }
 
-bool cJSON::bRead_WalletInfo(const std::string _WalletInfo_Json, std::string &_MasterWalletAddr, std::string &_MasterWalletPrivateKey)
+bool cJSON::bRead_WalletInfo(const std::string _WalletInfo_Json, std::string& _MasterWalletAddr, std::string& _MasterWalletPrivateKey)
 {
-	bool bRet = true;
+    bool bRet = true;
 
 	if (-1 != access(_WalletInfo_Json.c_str(), 0))
 	{
@@ -251,23 +251,23 @@ bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::stri
 									m_Reward.Reward_List[it->second.Wallet_addr].Price += _reward_Info.Price;
 									m_Reward.Reward_List[it->second.Wallet_addr].Work_Time += _reward_Info.Work_Time;
 								}
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				std::cout << "resultInfo.json File is Not Found DONE State" << std::endl;
-				bRet = false;
-			}
-		}
-	}
-	else
-	{
-		bRet = false;
-	}
-	return bRet;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "resultInfo.json File is Not Found DONE State" << std::endl;
+                bRet = false;
+            }
+        }
+    }
+    else
+    {
+        bRet = false;
+    }
+    return bRet;
 }
 
 bool cJSON::bRead_RewardResultInfo(const std::string _RewardResultInfoJson)
@@ -382,72 +382,79 @@ bool cJSON::bRead_RewardResultInfo(const std::string _RewardResultInfoJson)
 	return bRet;
 }
 
-bool cJSON::bWrite_RewardResult(std::map<int, StReward_Result> _ResultMap, std::string FaileName, long double nTotalRewardCoin)
-{
-	Document doc;
-	std::string TempJson;
-	std::map<int, StReward_Result>::iterator Tempit;
+bool cJSON::bWrite_RewardResult(std::map<int, StReward_Result> _ResultMap, std::string FileName, long double nTotalRewardCoin)
+{   
+    std::string TempFileName;
+	TempFileName.assign("Reward_Result.json");
+    //TempFileName.assign("Reward_Result_");
+    //TempFileName.append(FileName);
 
-	StringBuffer s;
-	Writer<StringBuffer> writer(s);
+    Document doc;
+    std::string TempJson;
+    std::map<int, StReward_Result>::iterator Tempit;
 
-	for (Tempit = _ResultMap.begin(); Tempit != _ResultMap.end(); ++Tempit)
-	{
-	    if (Tempit == _ResultMap.begin())
-	    {
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+
+    for (Tempit = _ResultMap.begin(); Tempit != _ResultMap.end(); ++Tempit)
+    {
+        if (Tempit == _ResultMap.begin())
+        {
 			writer.StartObject();
 			std::string TotalRewardCoin("Total_Reward_Coin");
 			writer.String(TotalRewardCoin.c_str(), static_cast<SizeType>(TotalRewardCoin.length()));
-			std::string RewardCoin(std::to_string(Tempit->second.Total_Reward_Coin));
+			std::string RewardCoin(std::to_string(Tempit->second.Total_Reward_Coin).c_str());
 			writer.String(RewardCoin.c_str(), static_cast<SizeType>(RewardCoin.length()));
 
-			std::string Reward_Result("Reward_Result");
+            std::string Reward_Result("Reward_Result");
 			writer.String(Reward_Result.c_str(), static_cast<SizeType>(Reward_Result.length()));
 			writer.StartArray();
-	    }
+        }
 
-	    writer.StartObject();
-	    std::string Wallet_Address("Wallet_Address");
-	    writer.String(Wallet_Address.c_str(), static_cast<SizeType>(Wallet_Address.length()));
-	    std::string Wallet(Tempit->second.Wallet_Address.c_str());
-	    writer.String(Wallet.c_str(), static_cast<SizeType>(Wallet.length()));
+        writer.StartObject();
+        std::string Wallet_Address("Wallet_Address");
+        writer.String(Wallet_Address.c_str(), static_cast<SizeType>(Wallet_Address.length()));
+        std::string Wallet(Tempit->second.Wallet_Address.c_str());
+        writer.String(Wallet.c_str(), static_cast<SizeType>(Wallet.length()));
 
-	    std::string TxHash("TxHash");
-	    writer.String(TxHash.c_str(), static_cast<SizeType>(TxHash.length()));
-	    std::string HashInfo(Tempit->second.TransactionHash);
-	    writer.String(HashInfo.c_str(), static_cast<SizeType>(HashInfo.length()));
+        std::string TxHash("TxHash");
+        writer.String(TxHash.c_str(), static_cast<SizeType>(TxHash.length()));
+        std::string HashInfo(Tempit->second.TransactionHash);
+        writer.String(HashInfo.c_str(), static_cast<SizeType>(HashInfo.length()));
 
-	    std::string Price("Price");
-	    writer.String(Price.c_str(), static_cast<SizeType>(Price.length()));
-	    std::string Count(std::to_string(Tempit->second.Price));
-	    writer.String(Count.c_str(), static_cast<SizeType>(Count.length()));
+        std::string Price("Price");
+        writer.String(Price.c_str(), static_cast<SizeType>(Price.length()));
+        std::string Count(std::to_string(Tempit->second.Price));
+        writer.String(Count.c_str(), static_cast<SizeType>(Count.length()));
 
-	    std::string ErrorCode("ErrorCode");
-	    writer.String(ErrorCode.c_str(), static_cast<SizeType>(ErrorCode.length()));
-	    std::string Code(Tempit->second.ErrorCode);
-	    writer.String(Code.c_str(), static_cast<SizeType>(Code.length()));
+        std::string ErrorCode("ErrorCode");
+        writer.String(ErrorCode.c_str(), static_cast<SizeType>(ErrorCode.length()));
+        std::string Code(Tempit->second.ErrorCode);
+        writer.String(Code.c_str(), static_cast<SizeType>(Code.length()));
 
-	    std::string ErrorMsg("ErrorMsg");
-	    writer.String(ErrorMsg.c_str(), static_cast<SizeType>(ErrorMsg.length()));
-	    std::string Msg(Tempit->second.ErrorMsg);
-	    writer.String(Msg.c_str(), static_cast<SizeType>(Msg.length()));
-	    writer.EndObject();
-	}	
+        std::string ErrorMsg("ErrorMsg");
+        writer.String(ErrorMsg.c_str(), static_cast<SizeType>(ErrorMsg.length()));
+        std::string Msg(Tempit->second.ErrorMsg);
+        writer.String(Msg.c_str(), static_cast<SizeType>(Msg.length()));
+        writer.EndObject();
+    }
 
-	writer.EndArray();
-	writer.EndObject();
+    writer.EndArray();
+    writer.EndObject();
 
-	FILE *fp = NULL;
-	fp = fopen(FaileName.c_str(), "wb");
-	fwrite(s.GetString(), s.GetSize(), 1, fp);
-	fclose(fp);
+    FILE* fp = NULL;
+    fp = fopen(TempFileName.c_str(), "wb");
+    fwrite(s.GetString(), s.GetSize(), 1, fp);
+    fclose(fp);
 
-	return true;
+    return true;
 }
 
 struct stBalanceInfo cJSON::Get_BalanceInfo(const std::string _String_Json)
 {
-	stBalanceInfo BalanceInfo;
+    stBalanceInfo BalanceInfo;
+
+    m_DocStringData.Parse(_String_Json.c_str());
 
 	m_DocStringData.Parse(_String_Json.c_str());	
 	
@@ -464,10 +471,10 @@ __int64 cJSON::Get_GasPrice(const std::string _String_Json)
     __int64 Data = 0;
 
     m_DocStringData.Parse(_String_Json.c_str());
-    
+
     if (false == m_DocStringData["meta"]["error"].IsString())
     {
-	Data = static_cast<__int64>(strtoll(m_DocStringData["payload"]["average"].GetString(), NULL, 10) * 1000000000);
+        Data = static_cast<__int64>(strtoll(m_DocStringData["payload"]["average"].GetString(), NULL, 10) * 1000000000);
     }
     return Data;
 }
@@ -479,13 +486,13 @@ __int64 cJSON::Get_GasLimit(const std::string _String_Json)
 
     if (false == m_DocStringData["meta"]["error"].IsString())
     {
-		Data = static_cast<__int64>(strtoll(m_DocStringData["payload"]["gasLimit"].GetString(), NULL, 10 ) * 1.40);
+        Data = static_cast<__int64>(strtoll(m_DocStringData["payload"]["gasLimit"].GetString(), NULL, 10) * 1.40);
     }
     return Data;
 }
 
 StErrorCode cJSON::Get_TokenSendTransactionHash(const std::string _String_Json)
-{	
+{
     StErrorCode StCode;
 
     m_DocStringData.Parse(_String_Json.c_str());
@@ -495,12 +502,12 @@ StErrorCode cJSON::Get_TokenSendTransactionHash(const std::string _String_Json)
         StCode.Msg.assign(m_DocStringData["meta"]["error"]["message"].GetString());
         StCode.Code.assign(std::to_string(m_DocStringData["meta"]["error"]["code"].GetInt()));
         StCode.Hex.assign("None");
-    }	
+    }
     else
     {
         StCode.Hex.assign(m_DocStringData["payload"]["hex"].GetString());
         StCode.Code.assign("0");
-        StCode.Msg.assign("None");	
+        StCode.Msg.assign("None");
     }
     return StCode;
 }

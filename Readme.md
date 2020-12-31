@@ -37,4 +37,4 @@ WSL 설치 후 셋팅 작업
 6. visual studio 에서 P2P_Reward_Linux 배포
 
 7. 리눅스에서 P2P_Reward_Linux Build
-   g++ *.cpp *.h -o Reward -I/usr/local/include -I/usr/include/rapidjson -lcurl
+   g++ *.cpp *.h -o P2P_Reward_Linux -I/usr/local/include -I/usr/include/rapidjson -lcurl

@@ -24,7 +24,7 @@ cReward::cReward()
 
     m_nReCount = 0;
 
-    m_nTotalRewardCoin = 0;
+    m_nTotalRewardCoin = 0.0f;
 }
 
 cReward::~cReward()
@@ -69,14 +69,14 @@ std::string cReward::GetResultInfoPath()
 
     ResultInfo.assign(sPath);
     ResultInfo.append("/");
-    ResultInfo.append("resultinfo.json");
+    //ResultInfo.append("resultinfo.json");
 
-    std::cout << "ResultInfo Json File Location : [ " << ResultInfo.c_str() << " ] " << std::endl;
+    //std::cout << "ResultInfo Json File Location : [ " << ResultInfo.c_str() << " ] " << std::endl;
 
     return ResultInfo;
 }
 
-std::string cReward::GetRewardResultInfoPath()
+std::string cReward::GetRewardResultInfoPath(std::string ResultFileName)
 {
     char* sPath;// [MAX_PATH] = { 0, };
     sPath = getcwd(NULL, MAX_PATH);
@@ -84,7 +84,7 @@ std::string cReward::GetRewardResultInfoPath()
 
     RewardResultInfo.assign(sPath);
     RewardResultInfo.append("/");
-    RewardResultInfo.append("Reward_Result.json");
+    RewardResultInfo.append(ResultFileName);
 
     std::cout << "RewardResultInfo Json File Location : [ " << RewardResultInfo.c_str() << " ] " << std::endl;
 
@@ -118,7 +118,7 @@ bool cReward::RewardResultInfoRead(const std::string _RewardResultInfoJson)
     return bRet;
 }
 
-bool cReward::GetRewardInfo()
+bool cReward::GetRewardInfo(std::string RewardFileName)
 {
     bool bRet = true;
 
@@ -133,11 +133,11 @@ bool cReward::GetRewardInfo()
     std::cout << "Project_Status : [ " << m_pRewardInfo->Project_Flag.c_str() << " ]" << std::endl;
     std::cout << "Total Reward Count : [ " << m_pRewardInfo->Reward_List.size() << " ]" << std::endl;
 
-    remove(GetResultInfoPath().c_str());
+    remove(RewardFileName.c_str());
     return bRet;
 }
 
-bool cReward::GetReRewardInfo()
+bool cReward::GetReRewardInfo(std::string ResultFileName)
 {
     bool bRet = true;
 
@@ -150,7 +150,7 @@ bool cReward::GetReRewardInfo()
 
     std::cout << "ReSend Master Wallet Address : [ " << m_pRewardInfo->Master_Wallet_Addr.c_str() << " ]" << std::endl;
 
-    remove(GetRewardResultInfoPath().c_str());
+    remove(GetRewardResultInfoPath(ResultFileName).c_str());
 
     return bRet;
 }
@@ -247,7 +247,7 @@ __int64 cReward::GetGasLimit()
     return nGas_Limit;
 }
 
-bool cReward::Token_Transfer()
+bool cReward::Token_Transfer(std::string ResultFileName)
 {
     bool bRet = true;
 
@@ -317,13 +317,21 @@ bool cReward::Token_Transfer()
         }
     }
 
-    std::string TempResultFileName("Reward_Result.json");
-    m_pJson->bWrite_RewardResult(m_Reward_Result, TempResultFileName, m_nTotalRewardCoin);
+    //std::string TempResultFileName(ResultFileName);
+    //TempResultFileName = TempResultFileName.replace(TempResultFileName.begin(), TempResultFileName.begin() + 11, "");
+    //m_pJson->bWrite_RewardResult(m_Reward_Result, TempResultFileName, m_nTotalRewardCoin);
+    m_pJson->bWrite_RewardResult(m_Reward_Result, "", m_nTotalRewardCoin);
+
+    //m_Reward_Result.clear();
+    //m_nTotalRewardCoin = 0.0f;
+
+    //m_pRewardInfo->Reward_List.clear();
+	//m_pReRewardInfo->ReReward_List.clear();
 
     return bRet;
 }
 
-bool cReward::Token_ReTransfer()
+bool cReward::Token_ReTransfer(std::string ResultFileName)
 {
     bool bRet = false;
 
@@ -341,7 +349,7 @@ bool cReward::Token_ReTransfer()
             if (0 != m_it2->second.TxHash.compare("None"))
             {
                 Result.Wallet_Address.assign(m_it2->second.Wallet_Address.c_str());
-                Result.Price = atoll(m_it2->second.Price.c_str());
+                Result.Price = static_cast<float>(atof(m_it2->second.Price.c_str()));
                 Result.TransactionHash.assign(m_it2->second.TxHash.c_str());
                 Result.bState = true;
                 Result.ErrorCode.assign(m_it2->second.ErrorCode.c_str());
@@ -356,7 +364,7 @@ bool cReward::Token_ReTransfer()
                     << ". Code = [ " << Result.ErrorCode.c_str() << " ]"
                     << std::endl;
 
-                if (nLoop != static_cast<int>(m_pReRewardInfo->ReReward_List.size()))
+                if (nLoop != m_pReRewardInfo->ReReward_List.size())
                 {
                     sleep(60);
                 }
@@ -387,7 +395,7 @@ bool cReward::Token_ReTransfer()
                 {
                     //전송 성공
                     Result.Wallet_Address.assign(m_it2->second.Wallet_Address.c_str());
-                    Result.Price = atoll(m_it2->second.Price.c_str());
+                    Result.Price = static_cast<float>(atof(m_it2->second.Price.c_str()));
                     Result.TransactionHash.assign(StCode.Hex.c_str());
                     Result.bState = true;
                     Result.ErrorCode.assign(StCode.Code.c_str());
@@ -399,7 +407,7 @@ bool cReward::Token_ReTransfer()
                 {
                     //전송 에러
                     Result.Wallet_Address.assign(m_it2->second.Wallet_Address.c_str());
-                    Result.Price = atoll(m_it2->second.Price.c_str());
+                    Result.Price = static_cast<float>(atof(m_it2->second.Price.c_str()));
                     Result.TransactionHash.assign(StCode.Hex.c_str());
                     Result.bState = false;
                     Result.ErrorCode.assign(StCode.Code.c_str());
@@ -414,14 +422,14 @@ bool cReward::Token_ReTransfer()
                 m_pUrl->InitCURL();
                 m_pUrl->CleanCURL();
 
-                if (nLoop != static_cast<int>(m_pReRewardInfo->ReReward_List.size()))
+                if (nLoop != m_pReRewardInfo->ReReward_List.size())
                 {
                     sleep(60);
                 }
             }
         }
 
-        std::string TempResultFileName("Reward_Result.json");
+        std::string TempResultFileName(ResultFileName);
         m_pJson->bWrite_RewardResult(m_Reward_Result, TempResultFileName, m_nTotalRewardCoin);
     }
 
