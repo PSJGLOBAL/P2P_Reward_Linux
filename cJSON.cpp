@@ -453,7 +453,7 @@ struct stBalanceInfo cJSON::Get_BalanceInfo(const std::string _String_Json)
 	
 	if(false == m_DocStringData["meta"]["error"].IsString())
 	{
-	    BalanceInfo.Balance = strtoll(m_DocStringData["payload"]["token"].GetString(), NULL, 10);
+	    BalanceInfo.Balance = std::stold(m_DocStringData["payload"]["token"].GetString());
 	}
 	
 	return BalanceInfo;
