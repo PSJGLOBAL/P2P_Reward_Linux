@@ -17,7 +17,7 @@ public:
 	std::string GetRewardResultInfoPath();
 
 	bool WalletInfoRead(const std::string _WalletInfoJson, std::string &_MasterWalletAddr, std::string &_MasterWalletPrivateKey);
-	bool ResultInfoRead(const std::string _ResultInfoJson, const std::string _Master_Wallet_Addr, const std::string _Master_Wallet_PrivateKey, float& _nTotalRewardCoin);
+	bool ResultInfoRead(const std::string _ResultInfoJson, const std::string _Master_Wallet_Addr, const std::string _Master_Wallet_PrivateKey, long double& _nTotalRewardCoin);
 	bool RewardResultInfoRead(const std::string _RewardResultInfoJson);
 
 	bool GetRewardInfo();
@@ -26,7 +26,7 @@ public:
 	bool SetContentHeader();
 	bool SetUrl();
 
-	__int64 TokenBalance();
+	long double TokenBalance();
 	__int64 GetGasFee();
 	__int64 GetGasLimit();
 
@@ -58,7 +58,7 @@ public:
 	__int64 nGas_Price, nGas_Limit;
 
 	bool bTransfer_State;
-	float m_nTotalRewardCoin;
+	long double m_nTotalRewardCoin;
 	int m_nReCount;
 };
 

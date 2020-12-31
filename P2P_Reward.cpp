@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
         {
             // 지갑 파일을 읽는다.
             TempWalletFilePath.assign(pReward->GetWalletInfoPath());
-
+            
             if (-1 == access(TempWalletFilePath.c_str(), 00))
             {
                 // 지갑 파일이 존재하지 않는다.
@@ -121,9 +121,11 @@ int main(int argc, char* argv[])
             else
             {
                 bState = pReward->WalletInfoRead(TempWalletFilePath, TempWalletAddr, TempWalletPrivateKey);
+
                 if (true != bState)
                 {
                     std::cout << "Master Wallet Info Not Load" << std::endl;
+                    std::cout << "Path = " << TempWalletFilePath.c_str() << std::endl;
                     system("pause");
                     exit(1);
                 }
@@ -150,19 +152,19 @@ int main(int argc, char* argv[])
             }
 
             // 토큰 밸런스 추출
-            __int64 nTotal_Token = pReward->TokenBalance();
+            long double nTotal_Token = pReward->TokenBalance();
             __int64 nGas_Fee, nGas_Limit;
 
             if (nTotal_Token <= 0 || nTotal_Token < pReward->m_nTotalRewardCoin)
             {
                 //토큰이 부족하다 
-                std::cout << "Your Token is Not Enoughth, Token Amount = [ " << nTotal_Token << " ]" << std::endl;
+                std::cout << "Your Token is Not Enoughth, Token Amount = [ " << static_cast<__int64>(nTotal_Token) << " ]" << std::endl;
                 system("pause");
                 exit(1);
             }
             else
             {
-                std::cout << "Your Token Amount = [ " << nTotal_Token << " ]" << std::endl;
+                std::cout << "Your Token Amount = [ " << static_cast<__int64>(nTotal_Token) << " ]" << std::endl;
 
                 nGas_Fee = pReward->GetGasFee();
 

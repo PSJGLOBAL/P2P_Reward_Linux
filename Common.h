@@ -68,16 +68,17 @@ typedef struct StReward_Result
 	std::string ErrorCode;
 	std::string ErrorMsg;
 
-	__int64		Total_Reward_Coin;
+	long double	Total_Reward_Coin;
 
-	float		Price;
+	long double	Price;
 	__int64		Work_Time;
 
 	bool		bState;
 
 	StReward_Result()
 	{
-		Price = 0.0f;
+		Total_Reward_Coin = 0.0f;
+		Price = 0.0f;		
 		Work_Time = 0;
 		Wallet_Address.clear();
 		TransactionHash.clear();
@@ -89,7 +90,7 @@ typedef struct StReward_Result
 
 typedef struct StReward_Info
 {
-	float Price;
+	long double Price;
 	__int64 Work_Time;
 
 	std::string	 Wallet_addr;
@@ -125,12 +126,12 @@ typedef struct StRewardList
 
 typedef struct StSumReward_Info
 {
-	__int64 Price;
+	long double  Price;
 	std::string	 Wallet_addr;
 
 	StSumReward_Info()
 	{
-		Price = 0;
+		Price = 0.0f;
 		Wallet_addr.clear();
 	}
 }SumReward_Info;
@@ -169,10 +170,10 @@ typedef struct StReReward
 
 typedef struct stBalanceInfo
 {
-	__int64 Balance;
+	long double Balance;
 
 	stBalanceInfo()
 	{
-		Balance = 0;
+		Balance = 0.0f;
 	}
 }BalanceInfo;

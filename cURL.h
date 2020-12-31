@@ -52,7 +52,7 @@ public:
 		m_strTargetURL.append(_Url.c_str());
 	}
 
-	__int64 Get_TokenBalance(const std::string _Param, const std::string _Param2, const std::string _Param3, cJSON* Json);
+	long double Get_TokenBalance(const std::string _Param, const std::string _Param2, const std::string _Param3, cJSON* Json);
 	
 	__int64 Get_GasFee(const std::string _Param, cJSON* Json);
 	__int64 Get_GasLimit(std::string _Param, std::string _Param2, std::string _Param3, cJSON* Json);

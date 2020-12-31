@@ -25,7 +25,7 @@ bool cJSON::bRead_WalletInfo(const std::string _WalletInfo_Json, std::string &_M
 	{
 		fp[0] = fopen(_WalletInfo_Json.c_str(), "rb");
 
-		if (NULL != fp[0])
+		if (NULL == fp[0])
 		{
 			bRet = false;
 		}
@@ -67,7 +67,7 @@ bool cJSON::bRead_WalletInfo(const std::string _WalletInfo_Json, std::string &_M
 						tot_num += cur_num;
 					}
 
-					if (tot_num != nFileSize)
+					if (tot_num != static_cast<uint64_t>(nFileSize))
 					{
 						std::cout << "Not Read WalletInfo JSON File All Contents" << std::endl;
 					}
@@ -108,7 +108,7 @@ bool cJSON::bRead_WalletInfo(const std::string _WalletInfo_Json, std::string &_M
 	return bRet;
 }
 
-bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::string _Master_Wallet_Addr, const std::string _Master_Wallet_PrivateKey, float &_nTotalRewardCount)
+bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::string _Master_Wallet_Addr, const std::string _Master_Wallet_PrivateKey, long double&_nTotalRewardCount)
 {
 	bool bRet = true;
 	
@@ -156,7 +156,7 @@ bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::stri
 						tot_num += cur_num;
 					}
 
-					if (tot_num != nFileSize)
+					if (tot_num != static_cast<uint64_t>(nFileSize))
 					{
 						std::cout << "not Read JSON File All Contents" << std::endl;
 					}
@@ -203,13 +203,21 @@ bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::stri
 							std::string TempPrice = NameList[i]["value"].GetString();
 							_reward_Info.Price = static_cast<float>(atof(TempPrice.c_str()));
 						}
-						else if (true == NameList[i]["value"].IsFloat())
+						else if (true == NameList[i]["value"].IsFloat() || true == NameList[i]["value"].IsLosslessFloat())
 						{
 							_reward_Info.Price = NameList[i]["value"].GetFloat();
 						}
-						else if (true == NameList[i]["value"].GetInt64())
+						else if (true == NameList[i]["value"].IsDouble() || true == NameList[i]["value"].IsLosslessDouble())
+						{
+							_reward_Info.Price = NameList[i]["value"].GetDouble();
+						}
+						else if (true == NameList[i]["value"].IsInt64() || true == NameList[i]["value"].IsUint64())
 						{
 							_reward_Info.Price = static_cast<float>(NameList[i]["value"].GetInt64());
+						}
+						else if (true == NameList[i]["value"].IsInt() || true == NameList[i]["value"].IsUint())
+						{
+							_reward_Info.Price = static_cast<float>(NameList[i]["value"].GetInt());
 						}
 
 						_reward_Info.Work_Time = NameList[i]["work_time"].GetInt64();
@@ -219,7 +227,8 @@ bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::stri
 						_nTotalRewardCount += _reward_Info.Price;
 
 						std::string TempWallet = NameList[i]["wallet_addr"].GetString();
-						if (-1 == TempWallet.find("0x"))
+						
+						if (-1 == reinterpret_cast<size_t>(TempWallet.find("0x")))
 						{
 							_reward_Info.Wallet_addr.assign("0x");
 							_reward_Info.Wallet_addr.append(NameList[i]["wallet_addr"].GetString());
@@ -231,25 +240,16 @@ bool cJSON::bRead_ResultInfo(const std::string _ResultInfo_Json, const std::stri
 
 						ret = m_Reward.Reward_List.insert(std::make_pair(_reward_Info.Wallet_addr, _reward_Info));
 
-						if (m_Reward.Reward_List.size() == 1 && true == ret.second)
+						if (false == ret.second)
 						{
 							it = m_Reward.Reward_List.begin();
-						}
-						else if (m_Reward.Reward_List.size() > 1 && false == ret.second)
-						{
-							if (it != m_Reward.Reward_List.end())
+
+							for (it = m_Reward.Reward_List.begin(); it != m_Reward.Reward_List.end(); ++it)
 							{
 								if (it->second.Wallet_addr == _reward_Info.Wallet_addr)
 								{
 									m_Reward.Reward_List[it->second.Wallet_addr].Price += _reward_Info.Price;
 									m_Reward.Reward_List[it->second.Wallet_addr].Work_Time += _reward_Info.Work_Time;
-
-									it++;
-
-									if (it == m_Reward.Reward_List.end())
-									{
-									    it = m_Reward.Reward_List.begin();
-									}
 								}
 							}
 						}
@@ -318,7 +318,7 @@ bool cJSON::bRead_RewardResultInfo(const std::string _RewardResultInfoJson)
 						tot_num += cur_num;
 					}
 
-					if (tot_num != nFileSize)
+					if (tot_num != static_cast<uint64_t>(nFileSize))
 					{
 						std::cout << "not Read JSON File All Contents" << std::endl;
 					}
@@ -382,7 +382,7 @@ bool cJSON::bRead_RewardResultInfo(const std::string _RewardResultInfoJson)
 	return bRet;
 }
 
-bool cJSON::bWrite_RewardResult(std::map<int, StReward_Result> _ResultMap, std::string FaileName, float nTotalRewardCoin)
+bool cJSON::bWrite_RewardResult(std::map<int, StReward_Result> _ResultMap, std::string FaileName, long double nTotalRewardCoin)
 {
 	Document doc;
 	std::string TempJson;
@@ -479,7 +479,7 @@ __int64 cJSON::Get_GasLimit(const std::string _String_Json)
 
     if (false == m_DocStringData["meta"]["error"].IsString())
     {
-	Data = static_cast<__int64>(strtoll(m_DocStringData["payload"]["gasLimit"].GetString(), NULL, 10 ) * 1.40);
+		Data = static_cast<__int64>(strtoll(m_DocStringData["payload"]["gasLimit"].GetString(), NULL, 10 ) * 1.40);
     }
     return Data;
 }

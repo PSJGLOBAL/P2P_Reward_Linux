@@ -100,7 +100,7 @@ bool cReward::WalletInfoRead(const std::string _WalletInfoJson, std::string& _Ma
     return bRet;
 }
 
-bool cReward::ResultInfoRead(const std::string _ResultInfoJson, const std::string _Master_Wallet_Addr, const std::string _Master_Wallet_PrivateKey, float& _nTotalRewardCoin)
+bool cReward::ResultInfoRead(const std::string _ResultInfoJson, const std::string _Master_Wallet_Addr, const std::string _Master_Wallet_PrivateKey, long double& _nTotalRewardCoin)
 {
     bool bRet = true;
 
@@ -151,6 +151,7 @@ bool cReward::GetReRewardInfo()
     std::cout << "ReSend Master Wallet Address : [ " << m_pRewardInfo->Master_Wallet_Addr.c_str() << " ]" << std::endl;
 
     remove(GetRewardResultInfoPath().c_str());
+
     return bRet;
 }
 
@@ -185,9 +186,9 @@ bool cReward::SetUrl()
     return bRet;
 }
 
-__int64 cReward::TokenBalance()
+long double cReward::TokenBalance()
 {
-    __int64 Total_Token = 0;
+    long double Total_Token = 0;
 
     m_pUrl->InitCURL();
     if (true == SetContentHeader())
@@ -310,7 +311,7 @@ bool cReward::Token_Transfer()
         m_pUrl->InitCURL();
         m_pUrl->CleanCURL();
 
-        if (nLoop < m_pRewardInfo->Reward_List.size())
+        if (nLoop < static_cast<int>(m_pRewardInfo->Reward_List.size()))
         {
             sleep(60);
         }
@@ -355,7 +356,7 @@ bool cReward::Token_ReTransfer()
                     << ". Code = [ " << Result.ErrorCode.c_str() << " ]"
                     << std::endl;
 
-                if (nLoop != m_pReRewardInfo->ReReward_List.size())
+                if (nLoop != static_cast<int>(m_pReRewardInfo->ReReward_List.size()))
                 {
                     sleep(60);
                 }
@@ -413,7 +414,7 @@ bool cReward::Token_ReTransfer()
                 m_pUrl->InitCURL();
                 m_pUrl->CleanCURL();
 
-                if (nLoop != m_pReRewardInfo->ReReward_List.size())
+                if (nLoop != static_cast<int>(m_pReRewardInfo->ReReward_List.size()))
                 {
                     sleep(60);
                 }
