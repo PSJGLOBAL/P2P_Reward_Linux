@@ -144,82 +144,91 @@ int main(int argc, char* argv[])
             // for 문 돌려서 resultinfo_*.json 파일의 목록을 Vector에 담는다.
             std::vector<std::string> TempResult = pReward->Get_Files_inDirectory(pReward->GetResultInfoPath(), "resultinfo_??????????.json");
 
-            for (int i = 0; i < TempResult.size(); ++i)
-            {
-                std::string ResultFileName(TempResult[i].c_str());
-                std::string PathName = pReward->GetResultInfoPath();
-                PathName = PathName + ResultFileName;
-                std::cout << "Read ResultInfo Json File : [ " << PathName.c_str() << " ] " << std::endl;
-                if (true != pReward->ResultInfoRead(PathName, TempWalletAddr, TempWalletPrivateKey, pReward->m_nTotalRewardCoin))
-                {
-                    std::cout << "Reward Result Info Not Found" << std::endl;
-                    system("pause");
-                    exit(1);
-                }
-                else
-                {
-                    pReward->GetRewardInfo(PathName);
-                }
-            }
-            // 토큰 밸런스 추출
-            long double nTotal_Token = pReward->TokenBalance();
-            __int64 nGas_Fee, nGas_Limit;
-
-            if (nTotal_Token <= 0 || nTotal_Token < pReward->m_nTotalRewardCoin)
-            {
-                //토큰이 부족하다 
-                std::cout << "Your Token is Not Enoughth, Token Amount = [ " << nTotal_Token << " ]" << std::endl;
-                system("pause");
-                exit(1);
-            }
+			if (TempResult.size() == 0)
+			{
+				std::cout << "resultinfo file not found" << std::endl;
+				system("pause");
+				exit(1);
+			}
             else
             {
-                std::cout << "Your Token Amount = [ " << static_cast<__int64>(nTotal_Token) << " ]" << std::endl;
+				for (int i = 0; i < TempResult.size(); ++i)
+				{
+					std::string ResultFileName(TempResult[i].c_str());
+					std::string PathName = pReward->GetResultInfoPath();
+					PathName = PathName + ResultFileName;
+					std::cout << "Read ResultInfo Json File : [ " << PathName.c_str() << " ] " << std::endl;
+					if (true != pReward->ResultInfoRead(PathName, TempWalletAddr, TempWalletPrivateKey, pReward->m_nTotalRewardCoin))
+					{
+						std::cout << "Reward Result Info Not Found" << std::endl;
+						system("pause");
+						exit(1);
+					}
+					else
+					{
+						pReward->GetRewardInfo(PathName);
+					}
+				}
+				// 토큰 밸런스 추출
+				long double nTotal_Token = pReward->TokenBalance();
+				__int64 nGas_Fee, nGas_Limit;
 
-                nGas_Fee = pReward->GetGasFee();
+				if (nTotal_Token <= 0 || nTotal_Token < pReward->m_nTotalRewardCoin)
+				{
+					//토큰이 부족하다 
+					std::cout << "Your Token is Not Enoughth, Token Amount = [ " << nTotal_Token << " ]" << std::endl;
+					system("pause");
+					exit(1);
+				}
+				else
+				{
+					std::cout << "Your Token Amount = [ " << static_cast<__int64>(nTotal_Token) << " ]" << std::endl;
 
-                if (nGas_Fee < 0)
-                {
-                    std::cout << "Gas Fee is Lower, Gas Fee = [ " << nGas_Fee << std::endl;
-                    system("pause");
-                    exit(1);
-                }
+					nGas_Fee = pReward->GetGasFee();
 
-                nGas_Limit = pReward->GetGasLimit();
+					if (nGas_Fee < 0)
+					{
+						std::cout << "Gas Fee is Lower, Gas Fee = [ " << nGas_Fee << std::endl;
+						system("pause");
+						exit(1);
+					}
 
-                if (nGas_Limit < 0)
-                {
-                    std::cout << "Gas Limit is Lower, Gas Limit = [ " << nGas_Limit << std::endl;
-                    system("pause");
-                    exit(1);
-                }
+					nGas_Limit = pReward->GetGasLimit();
 
-                pReward->Token_Transfer("");
+					if (nGas_Limit < 0)
+					{
+						std::cout << "Gas Limit is Lower, Gas Limit = [ " << nGas_Limit << std::endl;
+						system("pause");
+						exit(1);
+					}
 
+					pReward->Token_Transfer("");
+
+				}
+
+				if (false == pReward->bTransfer_State)
+				{
+					std::string RewardResultName("Reward_Result.json");
+					//std::string RewardResultName("Reward_Result_");
+					//ResultFileName = ResultFileName.replace(ResultFileName.begin(), ResultFileName.end() + 11, "");
+					//RewardResultName.append(ResultFileName);
+
+					while (false == pReward->bTransfer_State)
+					{
+						if (true != pReward->RewardResultInfoRead(pReward->GetRewardResultInfoPath(RewardResultName)))
+							//if (true != pReward->RewardResultInfoRead(pReward->GetRewardResultInfoPath(ResultFileName)))
+						{
+							std::cout << "Master Wallet Info Not Load" << std::endl;
+							system("pause");
+							exit(1);
+						}
+
+						pReward->GetReRewardInfo(RewardResultName);
+						pReward->Token_ReTransfer(RewardResultName);
+					}
+				}
+				std::cout << "Reward Success" << std::endl;
             }
-
-            if (false == pReward->bTransfer_State)
-            {
-                std::string RewardResultName("Reward_Result.json");
-                //std::string RewardResultName("Reward_Result_");
-                //ResultFileName = ResultFileName.replace(ResultFileName.begin(), ResultFileName.end() + 11, "");
-                //RewardResultName.append(ResultFileName);
-
-                while (false == pReward->bTransfer_State)
-                {
-                    if (true != pReward->RewardResultInfoRead(pReward->GetRewardResultInfoPath(RewardResultName)))
-                    //if (true != pReward->RewardResultInfoRead(pReward->GetRewardResultInfoPath(ResultFileName)))
-                    {
-                        std::cout << "Master Wallet Info Not Load" << std::endl;
-                        system("pause");
-                        exit(1);
-                    }
-
-                    pReward->GetReRewardInfo(RewardResultName);
-                    pReward->Token_ReTransfer(RewardResultName);
-                }
-            }
-            std::cout << "Reward Success" << std::endl;
         }
     }
 }
