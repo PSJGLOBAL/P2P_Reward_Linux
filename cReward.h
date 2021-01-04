@@ -36,8 +36,6 @@ public:
 
 	std::vector<std::string> Get_Files_inDirectory(const std::string& _path, const std::string& _filter)
 	{
-        std::string searching = "*.json";// _filter; //_path + _filter;
-
 		std::vector<std::string> return_;
 
 		DIR* pDir = opendir(_path.c_str());
@@ -46,12 +44,24 @@ public:
         if (pDir != NULL)
 		{
 			while((ent = readdir(pDir)) != NULL)
-			{                
+			{
+                std::cout << "Dir File : " << ent->d_name << std::endl;
 				//vector에 집어넣기
-                if (0 < strcmp(ent->d_name, "resultinfo_") && 21 >= strlen(ent->d_name))
+				int nCompRet = strncmp(ent->d_name, _filter.c_str(), 11);
+                int nCompRet2 = 0;
+				int nLen = static_cast<int>(strlen(ent->d_name));
+
+                for (int nLoop = 0; nLoop < static_cast<int>(strlen(ent->d_name)); nLoop++)
                 {
-                    std::cout << ent->d_name << std::endl;
+                    nCompRet2 = isspace(ent->d_name[nLoop]);
+                    if (nCompRet2 != 0)
+                        break;
+                }
+
+				if (0 == nCompRet && 0 == nCompRet2 && 26 >= nLen)
+                {                    
                     return_.push_back(ent->d_name);
+                    std::cout << "ResultInfo JSON File : [ " << ent->d_name << " ]" << std::endl;
                 }
 			}
             closedir(pDir);

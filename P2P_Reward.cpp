@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
         if (true == bState)
         {
             // for 문 돌려서 resultinfo_*.json 파일의 목록을 Vector에 담는다.
-            std::vector<std::string> TempResult = pReward->Get_Files_inDirectory(pReward->GetResultInfoPath(), "result_?????.json");
+            std::vector<std::string> TempResult = pReward->Get_Files_inDirectory(pReward->GetResultInfoPath(), "resultinfo_??????????.json");
 
             for (int i = 0; i < TempResult.size(); ++i)
             {
